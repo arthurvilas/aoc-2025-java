@@ -22,10 +22,36 @@ public class Day3 {
         return largestSeenJoltage;
     }
 
+    private static long part2(List<String> input) {
+        return input.stream()
+                .map(line -> line.chars().map(c -> c - '0').toArray())
+                .mapToLong(digitsArray -> findLargestJoltagebyAmount(digitsArray, 12))
+                .sum();
+    }
+
+    private static long findLargestJoltagebyAmount(int[] batteries, int amount) {
+        var leftmostIndexAvailable = 0;
+        var result = 0L;
+        for (var i = 0; i < amount; i++) {
+            var rightmostIndexAvailable = batteries.length - amount + i;
+            var largestDigit = 0;
+            for (int j = leftmostIndexAvailable; j <= rightmostIndexAvailable; j++) {
+                if (batteries[j] > largestDigit) {
+                    largestDigit = batteries[j];
+                    leftmostIndexAvailable = j + 1;
+                }
+            }
+            result = (result * 10) + largestDigit;
+        }
+
+        return result;
+    }
+
     static void main() {
         try {
             var input = Files.readAllLines(Path.of("./src/day3.txt"));
             System.out.println(part1(input));
+            System.out.println(part2(input));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
